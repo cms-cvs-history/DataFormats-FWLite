@@ -1,0 +1,11 @@
+<environment>
+<use name=boost>
+<use name=cppunit>
+</environment>
+<bin name=testDataFormatsFWLite 
+  file=test.cppunit.cpp>
+  <use name=cppunit>
+  <use name=DataFormats/FWLite>
+  <use name=FWCore/FWLite>
+  <use name=DataFormats/TestObjects>
+</bin>
