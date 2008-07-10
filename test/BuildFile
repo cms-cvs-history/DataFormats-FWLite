@@ -2,14 +2,13 @@
 <use name=boost>
 <use name=cppunit>
 </environment>
-#<bin name=testDataFormatsFWLite 
-#  file=test.cppunit.cpp>
-#  <use name=cppunit>
-#  <use name=DataFormats/FWLite>
-#  <use name=FWCore/FWLite>
-#  <use name=DataFormats/TestObjects>
-#</bin>
-#<bin file=TestRunnerDataFormatsFWLite.cpp>
-#  <flags TEST_RUNNER_ARGS=" /bin/bash DataFormats/FWLite/test run_all_t.sh">
-#  <use name=FWCore/Utilities>
-#</bin>
+<bin name=testDataFormatsFWLite 
+  file=test.cppunit.cpp>
+  <use name=DataFormats/FWLite>
+  <use name=FWCore/FWLite>
+  <use name=DataFormats/TestObjects>
+</bin>
+<bin file=TestRunnerDataFormatsFWLite.cpp>
+  <flags TEST_RUNNER_ARGS=" /bin/bash DataFormats/FWLite/test run_all_t.sh">
+  <use name=FWCore/Utilities>
+</bin>
