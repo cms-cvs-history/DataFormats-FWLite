@@ -14,6 +14,5 @@
 </bin>
 <library file="VectorIntProducer.cc" name=VectorIntProducer>
   <flags EDM_PLUGIN=1>
-  <use name=DataFormats/StdDictionaries>
   <use name=FWCore/Framework>
 </library>
