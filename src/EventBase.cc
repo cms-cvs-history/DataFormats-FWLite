@@ -44,16 +44,30 @@ namespace fwlite
    {
    }
 
+   bool
+   EventBase::getByLabel(const std::type_info& iInfo,
+		     const char* iModuleLabel,
+		     const char* iProductInstanceLabel,
+		     const char* iProcessLabel,
+		     void* oData) const 
+   {
+     edm::Provenance* prov;
+     return getByLabel(iInfo, iModuleLabel, iModuleLabel, iProcessLabel, oData, prov);
+   }
+
+
    edm::BasicHandle 
    EventBase::getByLabelImpl(const std::type_info& iWrapperInfo, const std::type_info& /*iProductInfo*/, const edm::InputTag& iTag) const 
    {
       edm::EDProduct* prod=0;
       void* prodPtr = &prod;
+      edm::Provenance* provPtr;
       getByLabel(iWrapperInfo, 
                  iTag.label().c_str(), 
                  iTag.instance().empty()?static_cast<const char*>(0):iTag.instance().c_str(),
                  iTag.process().empty()?static_cast<const char*> (0):iTag.process().c_str(),
-                 prodPtr);
+                 prodPtr,
+                 provPtr);
       if(0==prod) {
          edm::TypeID productType(iWrapperInfo);
          boost::shared_ptr<cms::Exception> whyFailed(new edm::Exception(edm::errors::ProductNotFound));
@@ -67,7 +81,7 @@ namespace fwlite
          edm::BasicHandle failed(whyFailed);
          return failed;
       }
-      edm::BasicHandle value(boost::shared_ptr<edm::EDProduct>(prod,null_deleter()),&s_prov);
+      edm::BasicHandle value(boost::shared_ptr<edm::EDProduct>(prod,null_deleter()),provPtr);
       return value;
    }
 }

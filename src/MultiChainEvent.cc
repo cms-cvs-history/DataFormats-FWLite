@@ -339,12 +339,13 @@ MultiChainEvent::getByLabel(const std::type_info& iType,
                        const char* iModule, 
                        const char* iInstance, 
                        const char* iProcess, 
-                       void* iValue) const
+			    void* iValue,
+      		       edm::Provenance *& prov) const
 {
-  bool ret1 = event1_->getByLabel(iType,iModule,iInstance,iProcess,iValue);
+  bool ret1 = event1_->getByLabel(iType,iModule,iInstance,iProcess,iValue,prov);
   if ( !ret1 ) {
     (const_cast<MultiChainEvent*>(this))->toSec(event1_->id());
-    bool ret2 = event2_->getByLabel(iType,iModule,iInstance,iProcess,iValue);
+    bool ret2 = event2_->getByLabel(iType,iModule,iInstance,iProcess,iValue,prov);
     if ( !ret2 ) return false;
   }
   return true;

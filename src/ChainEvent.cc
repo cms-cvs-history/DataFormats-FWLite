@@ -248,9 +248,10 @@ ChainEvent::getByLabel(const std::type_info& iType,
                        const char* iModule, 
                        const char* iInstance, 
                        const char* iProcess, 
-                       void* iValue) const
+                       void* iValue,
+                       edm::Provenance *& prov) const
 {
-  return event_->getByLabel(iType,iModule,iInstance,iProcess,iValue);
+  return event_->getByLabel(iType,iModule,iInstance,iProcess,iValue,prov);
 }
 
 edm::EDProduct const* ChainEvent::getByProductID(edm::ProductID const& iID) const

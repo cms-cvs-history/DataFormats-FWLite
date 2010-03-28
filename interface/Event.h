@@ -151,7 +151,8 @@ namespace fwlite {
                                                     const char*) const;
 
          // This function should only be called by fwlite::Handle<>
-         virtual bool getByLabel(const std::type_info&, const char*, const char*, const char*, void*) const;
+         virtual bool getByLabel(const std::type_info&, const char*, const char*, const char*, void*, edm::Provenance*&) const;
+         using EventBase::getByLabel;
          //void getByBranchName(const std::type_info&, const char*, void*&) const;
 
          bool isValid() const;
@@ -194,6 +195,7 @@ namespace fwlite {
          const edm::ProcessHistory& history() const;
          void updateAux(Long_t eventIndex) const;
          void fillFileIndex() const;
+         void clearProvenance() const;
 
          internal::Data& getBranchDataFor(const std::type_info&, const char*, const char*, const char*) const;
       
@@ -227,6 +229,10 @@ namespace fwlite {
          // mutable std::map<edm::ProductID,const edm::BranchDescription*> idToBD_;
       
          boost::shared_ptr<edm::EDProductGetter> getter_;
+
+         // takes ownership of Provenance
+	 mutable std::vector<boost::shared_ptr<edm::Provenance> > provVector_;
+
    };
 
 }

@@ -138,8 +138,15 @@ Event::~Event()
     delete [] *it;
   }
   delete pOldAux_;
+  clearProvenance();
 }
 
+void 
+Event::clearProvenance() const
+{
+  provVector_.clear();
+
+}
 //
 // assignment operators
 //
@@ -159,6 +166,7 @@ Event::~Event()
 const Event& 
 Event::operator++()
 {
+   clearProvenance();
    Long_t eventIndex = branchMap_.getEventEntry();
    if(eventIndex < size()) 
    {
@@ -172,6 +180,7 @@ Event::to(Long64_t iEntry)
 {
    if (iEntry < size())
    {
+      clearProvenance();
       // this is a valid entry
       return branchMap_.updateEvent(iEntry);
    }
@@ -188,6 +197,7 @@ Event::to(edm::RunNumber_t run, edm::EventNumber_t event)
 bool
 Event::to(edm::RunNumber_t run, edm::LuminosityBlockNumber_t lumi, edm::EventNumber_t event)
 {
+   clearProvenance();
    fillFileIndex();
    edm::FileIndex::const_iterator i = 
       fileIndex_.findEventPosition(run, lumi, event, true);
@@ -465,7 +475,8 @@ Event::getByLabel(const std::type_info& iInfo,
                   const char* iModuleLabel,
                   const char* iProductInstanceLabel,
                   const char* iProcessLabel,
-                  void* oData) const 
+                  void* oData,
+		  edm::Provenance*& prov) const 
 {
   if(atEnd()) {
     throw cms::Exception("OffEnd")<<"You have requested data past the last event";
@@ -487,7 +498,22 @@ Event::getByLabel(const std::type_info& iInfo,
     *pOData = theData.obj_.Address();
   }
   if ( 0 == *pOData ) return false;
-  else return true;
+  
+  // get provenance for the branch. no lookup yet
+  std::vector<edm::BranchDescription> descriptions = branchMap_.getBranchDescriptions();
+  for (std::vector<edm::BranchDescription>::const_iterator it=descriptions.begin(),end=descriptions.end();;++it)
+  {
+    if (it->branchName() == theData.branch_->GetName())
+    {
+      const edm::ProductID& id = branchMap_.branchIDToProductID(it->branchID());
+      // create new provenance and keep ownership
+      boost::shared_ptr<edm::Provenance> provSharedPtr(new edm::Provenance(*it, id));
+      provVector_.push_back(provSharedPtr);
+      prov = provSharedPtr.get();
+      break;      
+    }
+  }
+  return true;
 }
 
 edm::EventAuxiliary const& 
@@ -608,11 +634,13 @@ Event::getByProductID(edm::ProductID const& iID) const
       //std::cout <<" calling getByLabel"<<std::endl;
       //ask for the data
       void* dummy = 0;
+      edm::Provenance * prov = 0; 
       getByLabel(type.TypeInfo(),
                  k.module(),
                  k.product(),
                  k.process(),
-                 &dummy);
+                 &dummy,
+                 prov);
       //std::cout <<"  called"<<std::endl;
       if (0 == dummy) {
         return 0;

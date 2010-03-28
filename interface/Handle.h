@@ -16,7 +16,7 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Tue May  8 15:01:26 EDT 2007
-// $Id: Handle.h,v 1.12 2009/07/12 05:09:08 srappocc Exp $
+// $Id: Handle.h,v 1.13 2009/07/20 20:51:33 cplager Exp $
 //
 
 // system include files
@@ -93,11 +93,13 @@ class Handle
                       const char* iProcessLabel = 0) {
         TempWrapT* temp;
         void* pTemp = &temp;
+	edm::Provenance * prov = 0;
         iEvent.getByLabel(TempWrapT::typeInfo(),
                           iModuleLabel,
                           iProductInstanceLabel,
                           iProcessLabel,
-                          pTemp);
+                          pTemp,
+                          prov);
         delete errorThrower_;
         errorThrower_ = 0;
         if(0==temp) {

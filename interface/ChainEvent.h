@@ -71,7 +71,7 @@ namespace fwlite {
 
       // This function should only be called by fwlite::Handle<>
       virtual bool getByLabel(const std::type_info&, const char*, 
-                              const char*, const char*, void*) const;
+                              const char*, const char*, void*, edm::Provenance*&) const;
       //void getByBranchName(const std::type_info&, const char*, void*&) const;
 
       bool isValid() const;
