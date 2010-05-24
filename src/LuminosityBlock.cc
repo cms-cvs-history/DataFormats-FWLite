@@ -179,7 +179,7 @@ LuminosityBlock::to (edm::RunNumber_t run, edm::LuminosityBlockNumber_t luminosi
    if (entry == EntryFinder::invalidEntry) {
       return false;
    }
-   return branchMap_->updateRun(entry);
+   return branchMap_->updateLuminosityBlock(entry);
 }
 
 const LuminosityBlock&
