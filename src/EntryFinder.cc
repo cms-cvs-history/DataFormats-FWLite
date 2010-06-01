@@ -50,7 +50,7 @@ namespace fwlite {
          ret = i->entry();
        }
      } else {
-       edm::FileIndex::const_iterator i = fileIndex_.findRunPosition(run, true);
+       edm::FileIndex::const_iterator i = fileIndex_.findRunPosition(run);
        if (fileIndex_.end() != i) {
          ret = i->entry_;
        }
