@@ -8,7 +8,6 @@
 //
 // Original Author: Eric Vaandering
 //         Created:  Fri Jan 29 11:58:01 CST 2010
-// $Id: DataGetterHelper.cc,v 1.5 2010/05/26 15:23:14 dsr Exp $
 //
 
 // system include files
