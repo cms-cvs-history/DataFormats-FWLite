@@ -45,9 +45,9 @@ namespace fwlite {
    EntryFinder::findRun(edm::RunNumber_t const& run) const {
      EntryFinder::EntryNumber_t ret = invalidEntry;
      if (!indexIntoFile_.empty()) {
-       edm::IndexIntoFile::const_iterator i = indexIntoFile_.findRunPosition(run);
-       if (indexIntoFile_.end() != i) {
-         ret = i->entry();
+       edm::IndexIntoFile::IndexIntoFileItr i = indexIntoFile_.findRunPosition(run);
+       if (indexIntoFile_.end(true) != i) {
+         ret = i.entry();
        }
      } else {
        edm::FileIndex::const_iterator i = fileIndex_.findRunPosition(run);
