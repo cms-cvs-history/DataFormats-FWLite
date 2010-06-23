@@ -2,7 +2,7 @@
 
 Test program for edm::Ref use in ROOT.
 
-$Id: test.cppunit.cpp,v 1.11 2010/06/04 18:18:10 chrjones Exp $
+$Id: test.cppunit.cpp,v 1.10.4.1 2010/06/04 22:42:37 wmtan Exp $
  ----------------------------------------------------------------------*/
 
 #include <iostream>
@@ -38,6 +38,7 @@ class testRefInROOT: public CppUnit::TestFixture
    CPPUNIT_TEST(testMissingData);
    CPPUNIT_TEST(testEventBase);
    CPPUNIT_TEST(testSometimesMissingData);
+   CPPUNIT_TEST(testTo);
 
   // CPPUNIT_TEST_EXCEPTION(failChainWithMissingFile,std::exception);
   //failTwoDifferentFiles
@@ -77,6 +78,7 @@ public:
   void testMissingData();
   void testEventBase();
   void testSometimesMissingData();
+  void testTo();
   // void failChainWithMissingFile();
   //void failDidNotCallGetEntryForEvents();
 
@@ -187,6 +189,49 @@ void testRefInROOT::testEventBase()
    }
    
 }
+
+void testRefInROOT::testTo()
+{
+   TFile file("good.root");
+   fwlite::Event events(&file);
+   edm::InputTag tagFull("OtherThing","testUserTag","TEST");
+   edm::InputTag tag("OtherThing","testUserTag");
+   edm::InputTag tagNotHere("NotHereOtherThing");
+   edm::EventBase* eventBase = &events;
+   
+   CPPUNIT_ASSERT(events.to(1,1,2));
+   {
+      edm::Handle<edmtest::OtherThingCollection> pOthers;
+      eventBase->getByLabel(tagFull,pOthers);
+      CPPUNIT_ASSERT(pOthers.isValid());
+      pOthers->size();
+   }
+   {
+      edm::Handle<edmtest::OtherThingCollection> pOthers;
+      eventBase->getByLabel(tag,pOthers);
+      CPPUNIT_ASSERT(pOthers.isValid());
+      pOthers->size();
+   }
+   std::cout <<events.id()<<std::endl;
+   CPPUNIT_ASSERT(edm::EventID(1,1,2)==events.id());
+   
+   CPPUNIT_ASSERT(events.to(1,1,1));
+   {
+      edm::Handle<edmtest::OtherThingCollection> pOthers;
+      eventBase->getByLabel(tagFull,pOthers);
+      CPPUNIT_ASSERT(pOthers.isValid());
+      pOthers->size();
+   }
+   {
+      edm::Handle<edmtest::OtherThingCollection> pOthers;
+      eventBase->getByLabel(tag,pOthers);
+      CPPUNIT_ASSERT(pOthers.isValid());
+      pOthers->size();
+   }
+   CPPUNIT_ASSERT(edm::EventID(1,1,1)==events.id());
+   
+}
+
 
 void testRefInROOT::testRefFirst()
 {
