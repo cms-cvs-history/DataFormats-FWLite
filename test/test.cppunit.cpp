@@ -194,39 +194,27 @@ void testRefInROOT::testTo()
 {
    TFile file("good.root");
    fwlite::Event events(&file);
-   edm::InputTag tagFull("OtherThing","testUserTag","TEST");
-   edm::InputTag tag("OtherThing","testUserTag");
-   edm::InputTag tagNotHere("NotHereOtherThing");
+   edm::InputTag tag("Thing");
    edm::EventBase* eventBase = &events;
    
    CPPUNIT_ASSERT(events.to(1,1,2));
    {
-      edm::Handle<edmtest::OtherThingCollection> pOthers;
-      eventBase->getByLabel(tagFull,pOthers);
-      CPPUNIT_ASSERT(pOthers.isValid());
-      pOthers->size();
-   }
-   {
-      edm::Handle<edmtest::OtherThingCollection> pOthers;
-      eventBase->getByLabel(tag,pOthers);
-      CPPUNIT_ASSERT(pOthers.isValid());
-      pOthers->size();
+      edm::Handle<edmtest::ThingCollection> pThings;
+      eventBase->getByLabel(tag,pThings);
+      CPPUNIT_ASSERT(pThings.isValid());
+      CPPUNIT_ASSERT(0!=pThings->size());
+      CPPUNIT_ASSERT(3 == (*pThings)[0].a);
    }
    std::cout <<events.id()<<std::endl;
    CPPUNIT_ASSERT(edm::EventID(1,1,2)==events.id());
    
    CPPUNIT_ASSERT(events.to(1,1,1));
    {
-      edm::Handle<edmtest::OtherThingCollection> pOthers;
-      eventBase->getByLabel(tagFull,pOthers);
-      CPPUNIT_ASSERT(pOthers.isValid());
-      pOthers->size();
-   }
-   {
-      edm::Handle<edmtest::OtherThingCollection> pOthers;
-      eventBase->getByLabel(tag,pOthers);
-      CPPUNIT_ASSERT(pOthers.isValid());
-      pOthers->size();
+      edm::Handle<edmtest::ThingCollection> pThings;
+      eventBase->getByLabel(tag,pThings);
+      CPPUNIT_ASSERT(pThings.isValid());
+      CPPUNIT_ASSERT(0!=pThings->size());
+      CPPUNIT_ASSERT(2 == (*pThings)[0].a);
    }
    CPPUNIT_ASSERT(edm::EventID(1,1,1)==events.id());
    
