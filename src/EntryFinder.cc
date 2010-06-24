@@ -33,12 +33,36 @@ namespace fwlite {
 
    EntryFinder::EntryNumber_t
    EntryFinder::findEvent(edm::RunNumber_t const& run, edm::LuminosityBlockNumber_t const& lumi, edm::EventNumber_t const& event) const {
-	return 0LL;
+     EntryFinder::EntryNumber_t ret = invalidEntry;
+     if (!indexIntoFile_.empty()) {
+       edm::IndexIntoFile::IndexIntoFileItr i = indexIntoFile_.findEventPosition(run, lumi, event);
+       if (indexIntoFile_.end(true) != i) {
+         ret = i.entry();
+       }
+     } else {
+       edm::FileIndex::const_iterator i = fileIndex_.findEventPosition(run, lumi, event);
+       if (fileIndex_.end() != i) {
+         ret = i->entry_;
+       }
+     }
+     return ret;
    }
 
    EntryFinder::EntryNumber_t
    EntryFinder::findLumi(edm::RunNumber_t const& run, edm::LuminosityBlockNumber_t const& lumi) const {
-	return 0LL;
+     EntryFinder::EntryNumber_t ret = invalidEntry;
+     if (!indexIntoFile_.empty()) {
+       edm::IndexIntoFile::IndexIntoFileItr i = indexIntoFile_.findLumiPosition(run, lumi);
+       if (indexIntoFile_.end(true) != i) {
+         ret = i.entry();
+       }
+     } else {
+       edm::FileIndex::const_iterator i = fileIndex_.findLumiPosition(run, lumi);
+       if (fileIndex_.end() != i) {
+         ret = i->entry_;
+       }
+     }
+     return ret;
    }
 
    EntryFinder::EntryNumber_t
@@ -71,6 +95,7 @@ namespace fwlite {
         TBranch* b = meta->GetBranch(edm::poolNames::indexIntoFileBranchName().c_str());
         b->SetAddress(&indexPtr);
         b->GetEntry(0);
+        indexIntoFile_.fillRunOrLumiIndexes();
       } else if (meta->FindBranch(edm::poolNames::fileIndexBranchName().c_str()) != 0) {
         edm::FileIndex* findexPtr = &fileIndex_;
         TBranch* b = meta->GetBranch(edm::poolNames::fileIndexBranchName().c_str());
@@ -83,5 +108,49 @@ namespace fwlite {
       }
     }
     assert(!empty());
+  }
+
+  void
+  EntryFinder::fillEventEntriesInIndex(TBranch * auxBranch) {
+
+    if (!indexIntoFile_.eventEntries().empty()) {
+      return;
+    }
+    indexIntoFile_.eventEntries().resize(auxBranch->GetEntries());
+
+    void *saveAddress = auxBranch->GetAddress();
+    edm::EventAuxiliary *pEvAux = &this->eventAux_;
+    auxBranch->SetAddress(&pEvAux);
+
+    long long offset = 0;
+    long long previousBeginEventNumbers = -1;
+
+    for (edm::IndexIntoFile::SortedRunOrLumiItr runOrLumi = indexIntoFile_.beginRunOrLumi(),
+                                             endRunOrLumi = indexIntoFile_.endRunOrLumi();
+         runOrLumi != endRunOrLumi; ++runOrLumi) {
+
+      if (runOrLumi.isRun()) continue;
+
+      long long beginEventNumbers;
+      long long endEventNumbers;
+      EntryNumber_t beginEventEntry;
+      EntryNumber_t endEventEntry;
+      runOrLumi.getRange(beginEventNumbers, endEventNumbers, beginEventEntry, endEventEntry);
+
+      // This is true each time one hits a new lumi section (except if the previous lumi had
+      // no events, in which case the offset is still 0 anyway)
+      if (beginEventNumbers != previousBeginEventNumbers) offset = 0;
+
+      for (EntryNumber_t entry = beginEventEntry; entry != endEventEntry; ++entry) {
+	auxBranch->GetEntry(entry);
+        indexIntoFile_.eventEntries().at((entry - beginEventEntry) + offset + beginEventNumbers) =
+          edm::IndexIntoFile::EventEntry(eventAux_.event(), entry);
+      }
+
+      previousBeginEventNumbers = beginEventNumbers;
+      offset += endEventEntry - beginEventEntry;
+    }
+    indexIntoFile_.sortEventEntries();
+    auxBranch->SetAddress(saveAddress);
   }
 }

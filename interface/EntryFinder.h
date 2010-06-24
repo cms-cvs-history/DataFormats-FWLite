@@ -22,6 +22,7 @@
 // user include files
 #include "DataFormats/Provenance/interface/FileIndex.h"
 #include "DataFormats/Provenance/interface/IndexIntoFile.h"
+#include "DataFormats/Provenance/interface/EventAuxiliary.h"
 
 // forward declarations
 
@@ -37,10 +38,12 @@ namespace fwlite {
      EntryNumber_t findLumi(edm::RunNumber_t const& run, edm::LuminosityBlockNumber_t const& lumi) const;
      EntryNumber_t findRun(edm::RunNumber_t const& run) const;
      void fillIndex(BranchMapReader const& branchMap);
+     void fillEventEntriesInIndex(TBranch *auxBranch);
      static EntryNumber_t const invalidEntry = -1LL;
    private:
      edm::IndexIntoFile indexIntoFile_;
      edm::FileIndex fileIndex_;
+     edm::EventAuxiliary eventAux_; // Just a buffer
    };
 }
 #endif /*__CINT__ */
