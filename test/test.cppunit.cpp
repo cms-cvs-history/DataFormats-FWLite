@@ -2,7 +2,6 @@
 
 Test program for edm::Ref use in ROOT.
 
-$Id: test.cppunit.cpp,v 1.10.4.1 2010/06/04 22:42:37 wmtan Exp $
  ----------------------------------------------------------------------*/
 
 #include <iostream>
