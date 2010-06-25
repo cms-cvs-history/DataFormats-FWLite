@@ -36,7 +36,7 @@ namespace fwlite {
      EntryFinder::EntryNumber_t ret = invalidEntry;
      if (!indexIntoFile_.empty()) {
        edm::IndexIntoFile::IndexIntoFileItr i = indexIntoFile_.findEventPosition(run, lumi, event);
-       if (indexIntoFile_.end(true) != i) {
+       if (indexIntoFile_.end(edm::IndexIntoFile::numericalOrder) != i) {
          ret = i.entry();
        }
      } else {
@@ -53,7 +53,7 @@ namespace fwlite {
      EntryFinder::EntryNumber_t ret = invalidEntry;
      if (!indexIntoFile_.empty()) {
        edm::IndexIntoFile::IndexIntoFileItr i = indexIntoFile_.findLumiPosition(run, lumi);
-       if (indexIntoFile_.end(true) != i) {
+       if (indexIntoFile_.end(edm::IndexIntoFile::numericalOrder) != i) {
          ret = i.entry();
        }
      } else {
@@ -70,7 +70,7 @@ namespace fwlite {
      EntryFinder::EntryNumber_t ret = invalidEntry;
      if (!indexIntoFile_.empty()) {
        edm::IndexIntoFile::IndexIntoFileItr i = indexIntoFile_.findRunPosition(run);
-       if (indexIntoFile_.end(true) != i) {
+       if (indexIntoFile_.end(edm::IndexIntoFile::numericalOrder) != i) {
          ret = i.entry();
        }
      } else {
