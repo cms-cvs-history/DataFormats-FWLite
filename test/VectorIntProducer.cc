@@ -3,8 +3,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 namespace edmtest {
-  VectorIntProducer::VectorIntProducer(edm::ParameterSet const& iConfig)
-  {
+  VectorIntProducer::VectorIntProducer(edm::ParameterSet const&) {
     produces<std::vector<int> >();
   }
 
