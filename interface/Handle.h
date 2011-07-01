@@ -21,6 +21,10 @@
 // system include files
 
 // user include files
+namespace edm {
+  template<typename T> class Wrapper;
+}
+
 #if !defined(__CINT__) && !defined(__MAKECINT__)
 //CINT can't handle parsing these files
 #include "DataFormats/FWLite/interface/EventBase.h"
@@ -31,6 +35,7 @@
 // forward declarations
 namespace fwlite {
    class ErrorThrower;
+   class EventBase;
 
 template <class T>
 class Handle
@@ -51,7 +56,8 @@ class Handle
 
       const Handle<T>& operator=(const Handle<T>& iOther) {
          Handle<T> temp(iOther);
-         swap(iOther);
+         swap(temp);
+         return *this;
       }
 
       // ---------- const member functions ---------------------
@@ -252,7 +258,7 @@ class Handle
       iOther.data_ = temp;
       ErrorThrower* tempE = errorThrower_;
       errorThrower_ = iOther.errorThrower_;
-      iOther.errorThrower = tempE;
+      iOther.errorThrower_ = tempE;
    }
    private:
       void check() const { if(errorThrower_) { errorThrower_->throwIt();} }
